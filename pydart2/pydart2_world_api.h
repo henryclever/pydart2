@@ -10,7 +10,11 @@ int createWorld(double timestep);
 int createWorldFromSkel(const char* const path);
 void destroyWorld(int wid);
 
+int WORLD(addPySkeleton)(int wid);
 int WORLD(addSkeleton)(int wid, const char* const path);
+void WORLD(addEmptySkeleton)(const char* const name);
+void WORLD(addRootCapsule)();
+void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, const char* const joint_type);
 int WORLD(getNumSkeletons)(int wid);
 
 void WORLD(reset)(int wid);

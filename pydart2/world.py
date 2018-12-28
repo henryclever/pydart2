@@ -11,7 +11,8 @@ from __future__ import absolute_import
 import os.path
 import numpy as np
 from . import pydart2_api as papi
-from .skeleton import Skeleton
+#from .skeleton import Skeleton
+from .skeleton_builder import SkeletonBuilder
 # from .bodynode import BodyNode
 
 from .collision_result import CollisionResult
@@ -29,20 +30,25 @@ class World(object):
         BULLET_COLLISION_DETECTOR, \
         ODE_COLLISION_DETECTOR = list(range(4))
 
-    CLASS_SKELETON = Skeleton  # Modify this for inherited skeleton class
+    #CLASS_SKELETON = Skeleton  # Modify this for inherited skeleton class
+    CLASS_SKELETON = SkeletonBuilder
 
     def __init__(self, step, skel_path=None):
         self.skeletons = list()
         self.control_skel = None
         self.recording = None
 
-        if skel_path is not None:
+        if skel_path is not None and skel_path != "EMPTY":
             skel_path = os.path.realpath(skel_path)
             self.id = papi.createWorldFromSkel(skel_path)
             self.set_time_step(step)
             nskels = self.num_skeletons()
             for i in range(nskels):
                 self.add_skeleton_from_id(i)
+        elif skel_path  == "EMPTY":
+            self.id = papi.createWorld(step)
+            self.set_time_step(step)
+            self.add_skeleton_from_id(_skel_id=0, _skel_name="human")
         else:
             self.id = papi.createWorld(step)
 
@@ -60,8 +66,9 @@ class World(object):
         self.skeletons.append(skel)
         return skel
 
-    def add_skeleton_from_id(self, _skel_id):
-        skel = World.CLASS_SKELETON(_world=self, _id=_skel_id)
+    def add_skeleton_from_id(self, _skel_id, _skel_name = None):
+        print("Adding skeleton from id")
+        skel = World.CLASS_SKELETON(_world=self, _id=_skel_id, _skel_name=_skel_name)
         self.skeletons.append(skel)
         return skel
 

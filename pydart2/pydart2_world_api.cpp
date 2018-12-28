@@ -16,6 +16,15 @@ using std::endl;
 #include "pydart2_draw.h"
 
 using namespace pydart;
+using namespace dart::simulation;
+using namespace dart::dynamics;
+SkeletonPtr skel;
+BodyNodePtr bn;
+BodyNodePtr bn_ch;
+std::vector<BodyNodePtr> mBodyNodePtrs;
+int global_number = 5;
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // World
@@ -32,6 +41,8 @@ int createWorldFromSkel(const char* const path) {
 void destroyWorld(int wid) {
     Manager::destroyWorld(wid);
 }
+
+
 
 int WORLD(addSkeleton)(int wid, const char* const path) {
     using namespace dart::simulation;
@@ -62,7 +73,142 @@ int WORLD(addSkeleton)(int wid, const char* const path) {
     int id = world->getNumSkeletons();
     world->addSkeleton(skel);
     return id;
+
+
 }
+
+
+int WORLD(addPySkeleton)(int wid){
+    skel->getDof(1)->setPosition(120 * 3.14 / 180.0);
+    dart::simulation::WorldPtr world = GET_WORLD(wid);
+    int id = world->getNumSkeletons();
+    world->addSkeleton(skel);
+    return id;
+}
+
+
+void WORLD(addEmptySkeleton)(const char* const name) {
+    using namespace dart::simulation;
+    using namespace dart::dynamics;
+    std::string strname(name);
+    skel = Skeleton::create(strname);
+    global_number = 88;
+    MSG << " [pydart_api] Added empty skel " << global_number << endl;
+}
+
+
+void WORLD(addRootCapsule)(){
+    BallJoint::Properties properties;
+    properties.mName = "root joint";
+    properties.mRestPositions = Eigen::Vector3d::Constant(0.0f);
+    properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
+    properties.mDampingCoefficients = Eigen::Vector3d::Constant(5.0f);
+
+
+    bn = skel->createJointAndBodyNodePair<BallJoint>(nullptr, properties, BodyNode::AspectProperties("root joint")).second;
+    //bn = skel->createJointAndBodyNodePair<FreeJoint>(nullptr).second;
+
+    // Make a shape for the Joint
+    const double& R = 0.2; //m
+    std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(sqrt(2) * Eigen::Vector3d(R, R, R)));
+    auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
+    shapeNode->getVisualAspect()->setColor(dart::Color::Blue());
+
+
+
+
+    //Now make the body
+
+    // Create a BoxShape to be used for both visualization and collision checking
+    std::shared_ptr<BoxShape> box(new BoxShape(Eigen::Vector3d(0.2f, 0.2f, 1.0f)));
+
+    // Create a shape node for visualization and collision checking
+    shapeNode = bn->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(box);
+    shapeNode->getVisualAspect()->setColor(dart::Color::Blue());
+
+    // Set the location of the shape node
+    Eigen::Isometry3d box_tf(Eigen::Isometry3d::Identity());
+    Eigen::Vector3d center = Eigen::Vector3d(0, 0, 1.0 / 2.0);
+    box_tf.translation() = center;
+    shapeNode->setRelativeTransform(box_tf);
+
+    // Move the center of mass to the center of the object
+    bn->setLocalCOM(center);
+
+    mBodyNodePtrs.push_back(bn);
+
+    MSG << "Adding Root Capsule " << global_number << endl;
+}
+
+
+
+
+void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, const char* const joint_type){
+
+    std::string str_joint_type(joint_type);
+    if (str_joint_type == "BALL"){
+        MSG << str_joint_type << endl;
+        BallJoint::Properties properties;
+        properties.mName = "root joint";
+        properties.mRestPositions = Eigen::Vector3d::Constant(0.0f);
+        properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
+        properties.mDampingCoefficients = Eigen::Vector3d::Constant(5.0f);
+        bn = skel->createJointAndBodyNodePair<BallJoint>(nullptr, properties, BodyNode::AspectProperties("root joint")).second;
+        // Make a shape for the Joint
+        const double& R = 0.2; //m
+        std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(sqrt(2) * Eigen::Vector3d(R, R, R)));
+        auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
+        shapeNode->getVisualAspect()->setColor(dart::Color::Blue());
+    }
+    else if (str_joint_type == "REVOLUTE"){
+        MSG << str_joint_type << endl;
+        // Set up the properties for the Joint
+        RevoluteJoint::Properties properties;
+        properties.mName = "next joint";
+        properties.mAxis = Eigen::Vector3d::UnitY();
+        properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0, 0, 1.0f);
+        properties.mRestPositions[0] = 0.0f;
+        properties.mSpringStiffnesses[0] = 0.0f;
+        properties.mDampingCoefficients[0] = 5.0f;
+        // Create a new BodyNode, attached to its parent by a RevoluteJoint
+        bn = skel->createJointAndBodyNodePair<RevoluteJoint>(mBodyNodePtrs[parent], properties, BodyNode::AspectProperties("next joint")).second;
+        // Make a shape for the Joint
+        const double R = 0.2 / 2.0;
+        const double h = 0.2;
+        std::shared_ptr<CylinderShape> cyl(new CylinderShape(R, h));
+        // Line up the cylinder with the Joint axis
+        Eigen::Isometry3d tf(Eigen::Isometry3d::Identity());
+        tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(90.0 * 3.14 / 180.0, 0, 0));
+        auto shapeNode = bn->createShapeNodeWith<VisualAspect>(cyl);
+        shapeNode->getVisualAspect()->setColor(dart::Color::Blue());
+        shapeNode->setRelativeTransform(tf);
+    }
+    else {
+        bn = skel->createJointAndBodyNodePair<FreeJoint>(nullptr).second;
+    }
+
+    MSG << "making body" << endl;
+    //Now make the body
+
+    // Set the geometry of the Body  // Create a BoxShape to be used for both visualization and collision checking
+    std::shared_ptr<CapsuleShape> box(new CapsuleShape(capsule_radius, capsule_length));
+
+    // Create a shape node for visualization and collision checking
+    auto shapeNode = bn->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(box);
+    shapeNode->getVisualAspect()->setColor(dart::Color::Blue());
+
+    // Set the location of the shape node
+    Eigen::Isometry3d box_tf(Eigen::Isometry3d::Identity());
+    Eigen::Vector3d center = Eigen::Vector3d(0, 0, 1.0 / 2.0);
+    box_tf.translation() = center;
+    shapeNode->setRelativeTransform(box_tf);
+
+    // Move the center of mass to the center of the object
+    bn->setLocalCOM(center);
+    mBodyNodePtrs.push_back(bn);
+    MSG << "Adding Capsule " << global_number << endl;
+}
+
 
 int WORLD(getNumSkeletons)(int wid) {
     dart::simulation::WorldPtr world = GET_WORLD(wid);

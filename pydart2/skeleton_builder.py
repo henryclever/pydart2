@@ -23,21 +23,19 @@ from .joint import create_joint
 from .marker import Marker
 
 
-class Skeleton(object):
-    def __init__(self, _world, _filename=None,
-                 _id=None, _friction=None, _skel_name = None):
-        self.world = _world
+class SkeletonBuilder(object):
+    def __init__(self, _id, _world, _skel_name=None, _friction=None, _filename=None):
         self.friction = _friction
-        if _filename is not None:
-            self.filename = os.path.realpath(_filename)
-            self.id = papi.world__addSkeleton(self.world.id, self.filename)
-        else:
-            print("Didnt enter a filename")
-            self.filename = None
-            self.id = _id
-            papi.world__addCapsule()
-            papi.world__addEmptySkeleton("human")
-            papi.world__addCapsule()
+        papi.world__addEmptySkeleton(_skel_name)
+        papi.world__addCapsule(0, 0.1, 0.5, "BALL")
+        papi.world__addCapsule(0, 0.1, 0.5, "REVOLUTE")
+        papi.world__addCapsule(1, 0.1, 0.5, "REVOLUTE")
+        papi.world__addCapsule(2, 0.1, 0.5, "REVOLUTE")
+        papi.world__addCapsule(3, 0.1, 0.5, "REVOLUTE")
+
+        self.world = _world
+
+        self.id = papi.world__addPySkeleton(self.world.id)
 
         self.controller = None
         self.build()

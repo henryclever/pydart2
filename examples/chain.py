@@ -30,15 +30,17 @@ if __name__ == '__main__':
 
     #world = pydart.World(0.0002, './data/skel/chain.skel')
     world = pydart.World(0.0002, "EMPTY")
-    world.set_gravity([ -9.81, 0,  0])
+    world.set_gravity([0, 0,  9.81])
     print('pydart create_world OK')
 
     #pydart.world__addCapsule()
 
     skel = world.skeletons[0]
-    ##skel_q_init = np.random.rand(skel.ndofs) - 0.5
-    #skel_q_init = skel.ndofs * [0]
-    #skel.set_positions(skel_q_init)
+    #skel_q_init = np.random.rand(skel.ndofs) - 0.5
+    skel_q_init = skel.ndofs * [0]
+    skel_q_init[3] = np.pi/2
+    print skel_q_init
+    skel.set_positions(skel_q_init)
     #print skel.root_bodynode()
     #print skel.name
     #from pydart2 import bodynode

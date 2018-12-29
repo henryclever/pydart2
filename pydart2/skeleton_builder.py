@@ -27,14 +27,13 @@ class SkeletonBuilder(object):
     def __init__(self, _id, _world, _skel_name=None, _friction=None, _filename=None):
         self.friction = _friction
         papi.world__addEmptySkeleton(_skel_name)
-        papi.world__addCapsule(0, 0.1, 0.5, "BALL")
-        papi.world__addCapsule(0, 0.1, 0.5, "REVOLUTE")
-        papi.world__addCapsule(1, 0.1, 0.5, "REVOLUTE")
-        papi.world__addCapsule(2, 0.1, 0.5, "REVOLUTE")
-        papi.world__addCapsule(3, 0.1, 0.5, "REVOLUTE")
+        papi.world__addCapsule(-1, 0.1, 0.5, "BALL", "joint 1")
+        papi.world__addCapsule(0, 0.1, 0.5, "REVOLUTE", "joint 2")
+        papi.world__addCapsule(1, 0.1, 0.5, "REVOLUTE", "joint 3")
+        papi.world__addCapsule(2, 0.1, 0.5, "REVOLUTE", "joint 4")
+        papi.world__addCapsule(3, 0.1, 0.5, "REVOLUTE", "joint 5")
 
         self.world = _world
-
         self.id = papi.world__addPySkeleton(self.world.id)
 
         self.controller = None

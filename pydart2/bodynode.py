@@ -294,6 +294,56 @@ class BodyNode(object):
                                    _isForceLocal,
                                    _isOffsetLocal)
 
+    def add_ext_force_with_arrow(self,
+                      _force,
+                      _offset,
+                      _arrow_tailX,
+                      _arrow_tailY,
+                      _arrow_tailZ,
+                      _arrow_headX,
+                      _arrow_headY,
+                      _arrow_headZ,
+                      _isForceLocal=False,
+                      _isOffsetLocal=True):
+        papi.bodynode__addExtForceWithArrow(self.wid,
+                                   self.skid,
+                                   self.id,
+                                   _force,
+                                   _offset,
+                                   _arrow_tailX,
+                                   _arrow_tailY,
+                                   _arrow_tailZ,
+                                   _arrow_headX,
+                                   _arrow_headY,
+                                   _arrow_headZ,
+                                   _isForceLocal,
+                                   _isOffsetLocal)
+
+    def set_ext_force_with_arrow(self,
+                      _force,
+                      _offset,
+                      _arrow_tailX,
+                      _arrow_tailY,
+                      _arrow_tailZ,
+                      _arrow_headX,
+                      _arrow_headY,
+                      _arrow_headZ,
+                      _isForceLocal=False,
+                      _isOffsetLocal=True):
+        papi.bodynode__setExtForceWithArrow(self.wid,
+                                   self.skid,
+                                   self.id,
+                                   _force,
+                                   _offset,
+                                   _arrow_tailX,
+                                   _arrow_tailY,
+                                   _arrow_tailZ,
+                                   _arrow_headX,
+                                   _arrow_headY,
+                                   _arrow_headZ,
+                                   _isForceLocal,
+                                   _isOffsetLocal)
+
     def add_ext_torque(self, _torque, _isLocal=False):
         papi.bodynode__addExtTorque(self.wid, self.skid, self.id,
                                     _torque, _isLocal)

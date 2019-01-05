@@ -11,7 +11,7 @@ from __future__ import absolute_import
 import os.path
 import numpy as np
 from . import pydart2_api as papi
-#from .skeleton import Skeleton
+from .skeleton import Skeleton
 from .skeleton_builder import SkeletonBuilder
 # from .bodynode import BodyNode
 
@@ -30,8 +30,8 @@ class World(object):
         BULLET_COLLISION_DETECTOR, \
         ODE_COLLISION_DETECTOR = list(range(4))
 
-    #CLASS_SKELETON = Skeleton  # Modify this for inherited skeleton class
-    CLASS_SKELETON = SkeletonBuilder
+    CLASS_SKELETON = Skeleton  # Modify this for inherited skeleton class
+    CLASS_SKELETON_BUILDER = SkeletonBuilder
 
     def __init__(self, step, skel_path=None):
         self.skeletons = list()
@@ -48,7 +48,6 @@ class World(object):
         elif skel_path  == "EMPTY":
             self.id = papi.createWorld(step)
             self.set_time_step(step)
-            self.add_skeleton_from_id(_skel_id=0, _skel_name="human")
         else:
             self.id = papi.createWorld(step)
 
@@ -66,8 +65,18 @@ class World(object):
         self.skeletons.append(skel)
         return skel
 
+    def create_empty_skeleton(self, _skel_name = None):
+        papi.world__addEmptySkeleton(_skel_name)
+
+    def add_capsule(self, parent, radius, length, cap_rot, cap_offset, joint_loc, joint_damping, joint_type, joint_name):
+        papi.world__addCapsule(parent, radius, length, cap_rot[0], cap_rot[1], cap_rot[2], cap_offset[0], cap_offset[1], cap_offset[2], joint_loc[0], joint_loc[1], joint_loc[2], joint_damping, joint_type, joint_name)
+
+    def add_built_skeleton(self, _skel_id, _skel_name = None):
+        skel = World.CLASS_SKELETON_BUILDER(_world=self, _id=_skel_id, _skel_name=_skel_name)
+        self.skeletons.append(skel)
+        return skel
+
     def add_skeleton_from_id(self, _skel_id, _skel_name = None):
-        print("Adding skeleton from id")
         skel = World.CLASS_SKELETON(_world=self, _id=_skel_id, _skel_name=_skel_name)
         self.skeletons.append(skel)
         return skel

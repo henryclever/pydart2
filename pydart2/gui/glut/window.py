@@ -89,6 +89,9 @@ class GLUTWindow(object):
             return
         if self.is_simulating:
             self.sim.step()
+            #print "did a step"
+            skel = self.sim.skeletons[0]
+            #print skel.q
             # if self.sim.frame % 10 == 0:
             #     self.capture()
         elif self.is_animating:

@@ -5,6 +5,7 @@
 # Disney Research Robotics Group
 import numpy as np
 
+RENDER_DART = True
 
 class DampingController(object):
     """ Add damping force to the skeleton """
@@ -58,9 +59,19 @@ if __name__ == '__main__':
     print('init pose = %s' % skel.q)
     skel.controller = DampingController(skel)
 
-    pydart.gui.viewer.launch(world)
+    #pydart.gui.viewer.launch(world)
 
-    # # Or, you can manually create the window...
-    # win = pydart.gui.viewer.PydartWindow(world)
-    # win.camera_event(1)
-    # win.run_application()
+    if RENDER_DART == False:
+        for i in range(0, 100):
+            world.step()
+            print "did a step"
+            skel = world.skeletons[0]
+            print skel.q
+
+    elif RENDER_DART == True:
+        from pydart2.gui.glut.window import GLUTWindow
+        win = GLUTWindow(world, title=None)
+        default_camera = None
+        if default_camera is not None:
+            win.scene.set_camera(default_camera)
+        win.run()

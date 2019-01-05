@@ -96,7 +96,7 @@ void WORLD(addEmptySkeleton)(const char* const name) {
 
 
 
-void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, const char* const joint_type, const char* const joint_name){
+void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, float cap_rot1, float cap_rot2, float cap_rot3, float cap_offsetX, float cap_offsetY, float cap_offsetZ, float joint_locX, float joint_locY, float joint_locZ, float joint_damping, const char* const joint_type, const char* const joint_name){
 
 
     BodyNodePtr parentNode = nullptr;
@@ -111,33 +111,43 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, c
     if (str_joint_type == "BALL"){
         BallJoint::Properties properties;
         properties.mName = str_joint_name;
-        properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0, 0, 1.0f); //joint location
+        properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ); //joint location
         properties.mRestPositions = Eigen::Vector3d::Constant(0.0f);
         properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
-        properties.mDampingCoefficients = Eigen::Vector3d::Constant(5.0f);
+        properties.mDampingCoefficients = Eigen::Vector3d::Constant(joint_damping);
         bn = skel->createJointAndBodyNodePair<BallJoint>(parentNode, properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
-        const double& R = 0.2; //m
-        std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(sqrt(2) * Eigen::Vector3d(R, R, R)));
+        const double& R = capsule_radius * 2 + 0.01; //m
+        std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
         auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
         shapeNode->getVisualAspect()->setColor(dart::Color::Red());
     }
-    else if (str_joint_type == "REVOLUTE"){
+    else if (str_joint_type == "REVOLUTE_X" or str_joint_type == "REVOLUTE_Y" or str_joint_type == "REVOLUTE_Z"){
         RevoluteJoint::Properties properties;
         properties.mName = str_joint_name;
-        properties.mAxis = Eigen::Vector3d::UnitY();
-        properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(0, 0, 1.0f); //joint location
+        if (str_joint_type == "REVOLUTE_X"){
+            properties.mAxis = Eigen::Vector3d::UnitX();}
+        else if (str_joint_type == "REVOLUTE_Y"){
+            properties.mAxis = Eigen::Vector3d::UnitY();}
+        else if (str_joint_type == "REVOLUTE_Z"){
+            properties.mAxis = Eigen::Vector3d::UnitZ();}
+        properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ); //joint location
         properties.mRestPositions[0] = 0.0f;
         properties.mSpringStiffnesses[0] = 0.0f;
-        properties.mDampingCoefficients[0] = 5.0f;
+        properties.mDampingCoefficients[0] = joint_damping;
         bn = skel->createJointAndBodyNodePair<RevoluteJoint>(parentNode, properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
-        const double R = 0.2 / 2.0;
-        const double h = 0.2;
+        const double R = capsule_radius + 0.01;
+        const double h = capsule_radius * 2;
         std::shared_ptr<CylinderShape> cyl(new CylinderShape(R, h));
         // Line up the cylinder with the Joint axis
         Eigen::Isometry3d tf(Eigen::Isometry3d::Identity());
-        tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(90.0 * 3.14 / 180.0, 0, 0));
+        if (str_joint_type == "REVOLUTE_X"){
+            tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(0, 90.0 * 3.14 / 180.0, 0));}
+        else if (str_joint_type == "REVOLUTE_Y"){
+            tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(90.0 * 3.14 / 180.0, 0, 0));}
+        else if (str_joint_type == "REVOLUTE_Z"){
+            tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(0, 0, 90.0 * 3.14 / 180.0));}
         auto shapeNode = bn->createShapeNodeWith<VisualAspect>(cyl);
         shapeNode->getVisualAspect()->setColor(dart::Color::Red());
         shapeNode->setRelativeTransform(tf);
@@ -157,8 +167,18 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, c
 
     // Set the location of the shape node
     Eigen::Isometry3d capsule_tf(Eigen::Isometry3d::Identity());
-    Eigen::Vector3d center = Eigen::Vector3d(0, 0, 1.0 / 2.0);
+    Eigen::Matrix3d m;
+    m = Eigen::AngleAxisd(1.57079632679, Eigen::Vector3d::UnitX())
+      * Eigen::AngleAxisd(cap_rot1, Eigen::Vector3d::UnitX())
+      * Eigen::AngleAxisd(cap_rot2, Eigen::Vector3d::UnitZ())
+      * Eigen::AngleAxisd(cap_rot3, Eigen::Vector3d::UnitY());
+
+
+    Eigen::Vector3d center = Eigen::Vector3d(cap_offsetX, cap_offsetY, cap_offsetZ);
     capsule_tf.translation() = center;
+    capsule_tf.rotate(m);
+    cout << m << endl;
+
     shapeNode->setRelativeTransform(capsule_tf);
 
     // Move the center of mass to the center of the object

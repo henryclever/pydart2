@@ -14,7 +14,35 @@ using std::endl;
 #include "pydart2_bodynode_api.h"
 #include "pydart2_draw.h"
 
+
+#include <dart/dart.hpp>
+#include <dart/gui/gui.hpp>
+
+
 using namespace pydart;
+using namespace dart::dynamics;
+
+
+
+/// An arrow shape that we will use to visualize applied forces
+//std::shared_ptr<ArrowShape> mArrow;
+
+
+const double default_height = 0.1; // m
+const double default_width = 0.05;  // m
+const double default_depth = 0.05; // m
+
+//ArrowShape::Properties properties;
+//properties.mRadius = 0.05;
+
+std::shared_ptr<ArrowShape> mArrow(new ArrowShape(
+              Eigen::Vector3d(0.0, 0.0, 0.0), //tail
+              Eigen::Vector3d(0.0, 0.0, 0.0), //head
+              ArrowShape::Properties(0.01, 1.8, 0.5), //radius, head rad scale, scale of head length w.r.t total length
+              dart::Color::Orange(1.0))); //color
+
+//std::shared_ptr<ArrowShape> mArrow;
+//mArrow->setProperties( ArrowShape::Properties(0.01, 1.8, 0.5) ) ;
 
 ////////////////////////////////////////////////////////////////////////////////
 // BodyNode
@@ -268,6 +296,38 @@ void BODY(addExtForce)(int wid, int skid, int bid, double inv3[3], double inv3_2
 void BODY(setExtForce)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], bool _isForceLocal, bool _isOffsetLocal) {
     dart::dynamics::BodyNodePtr body = GET_BODY(wid, skid, bid);
     body->setExtForce(read(inv3, 3), read(inv3_2, 3), _isForceLocal, _isOffsetLocal);
+}
+
+void BODY(addExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, bool _isForceLocal, bool _isOffsetLocal) {
+    BodyNode* body = GET_BODY(wid, skid, bid);
+    body->addExtForce(read(inv3, 3), read(inv3_2, 3), _isForceLocal, _isOffsetLocal);
+
+    mArrow->setPositions(
+            Eigen::Vector3d(ATX, ATY, ATZ),
+            Eigen::Vector3d(AHX, AHY, AHZ));
+    //auto shapeNodes = body->getShapeNodesWith<VisualAspect>();
+    //shapeNodes[1]->getVisualAspect()->setColor(dart::Color::Green());
+    body->createShapeNodeWith<VisualAspect>(mArrow);
+
+}
+
+void BODY(setExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, bool _isForceLocal, bool _isOffsetLocal) {
+    BodyNode* body = GET_BODY(wid, skid, bid);
+    body->setExtForce(read(inv3, 3), read(inv3_2, 3), _isForceLocal, _isOffsetLocal);
+    auto visualShapeNodes = body->getShapeNodesWith<VisualAspect>();
+    // If we have three visualization shapes, that means the arrow is
+    // attached. We should remove it in case this body is no longer
+    // experiencing a force
+    if(visualShapeNodes.size() == 3u)
+    {
+        visualShapeNodes[2]->remove();
+    }
+    mArrow->setPositions(
+            Eigen::Vector3d(ATX, ATY, ATZ),
+            Eigen::Vector3d(AHX, AHY, AHZ));
+    body->createShapeNodeWith<VisualAspect>(mArrow);
+
+
 }
 
 

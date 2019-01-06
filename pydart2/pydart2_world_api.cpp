@@ -96,7 +96,7 @@ void WORLD(addEmptySkeleton)(const char* const name) {
 
 
 
-void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, float cap_rot1, float cap_rot2, float cap_rot3, float cap_offsetX, float cap_offsetY, float cap_offsetZ, float joint_locX, float joint_locY, float joint_locZ, float joint_damping, const char* const joint_type, const char* const joint_name){
+void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, float cap_rot1, float cap_rot2, float cap_rot3, float cap_offsetX, float cap_offsetY, float cap_offsetZ, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_type, const char* const joint_name){
 
 
     BodyNodePtr parentNode = nullptr;
@@ -114,7 +114,6 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ); //joint location
         properties.mRestPositions = Eigen::Vector3d::Constant(0.0f);
         properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
-        properties.mDampingCoefficients = Eigen::Vector3d::Constant(joint_damping);
         bn = skel->createJointAndBodyNodePair<BallJoint>(parentNode, properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
         const double& R = capsule_radius * 2 + 0.01; //m
@@ -134,7 +133,6 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ); //joint location
         properties.mRestPositions[0] = 0.0f;
         properties.mSpringStiffnesses[0] = 0.0f;
-        properties.mDampingCoefficients[0] = joint_damping;
         bn = skel->createJointAndBodyNodePair<RevoluteJoint>(parentNode, properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
         const double R = capsule_radius + 0.01;

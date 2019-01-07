@@ -151,7 +151,18 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         shapeNode->setRelativeTransform(tf);
     }
     else {
+        FreeJoint::Properties properties;
+        properties.mName = str_joint_name;
+        properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ); //joint location
+        properties.mRestPositions[0] = 0.0f;
+        //properties.mRestPositions = Eigen::Vector3d::Constant(0.0f);
+        //properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
         bn = skel->createJointAndBodyNodePair<FreeJoint>(nullptr).second;
+        // Make a shape for the Joint
+        const double& R = capsule_radius * 2 + 0.01; //m
+        std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
+        auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
+        shapeNode->getVisualAspect()->setColor(dart::Color::Red());
     }
 
     //Now make the body
@@ -179,6 +190,8 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
 
     shapeNode->setRelativeTransform(capsule_tf);
 
+
+    //MSG << node_transform << endl;
     // Move the center of mass to the center of the object
     bn->setLocalCOM(center);
     mBodyNodePtrs.push_back(bn);

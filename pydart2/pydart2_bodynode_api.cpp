@@ -68,6 +68,7 @@ int BODY(getNumChildBodyNodes)(int wid, int skid, int bid) {
     return body->getNumChildBodyNodes();
 }
 
+
 int BODY(getChildBodyNode)(int wid, int skid, int bid, int _index) {
     dart::dynamics::BodyNodePtr body = GET_BODY(wid, skid, bid);
     dart::dynamics::BodyNode* child = body->getChildBodyNode(_index);

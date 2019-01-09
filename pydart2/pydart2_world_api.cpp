@@ -157,13 +157,14 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         properties.mRestPositions[0] = 0.0f;
         //properties.mRestPositions = Eigen::Vector3d::Constant(0.0f);
         //properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
-        bn = skel->createJointAndBodyNodePair<FreeJoint>(nullptr).second;
+        bn = skel->createJointAndBodyNodePair<FreeJoint>(nullptr,  properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
         const double& R = capsule_radius * 2 + 0.01; //m
         std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
         auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
         shapeNode->getVisualAspect()->setColor(dart::Color::Red());
     }
+
 
     //Now make the body
 

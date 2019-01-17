@@ -35,9 +35,9 @@ class Skeleton(object):
             print("Didnt enter a filename")
             self.filename = None
             self.id = _id
-            papi.world__addCapsule()
-            papi.world__addEmptySkeleton("human")
-            papi.world__addCapsule()
+            #papi.world__addCapsule()
+            #papi.world__addEmptySkeleton("human")
+            #papi.world__addCapsule()
 
         self.controller = None
         self.build()

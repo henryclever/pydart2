@@ -303,8 +303,9 @@ class BodyNode(object):
                       _arrow_headX,
                       _arrow_headY,
                       _arrow_headZ,
+                      _arrow_index,
                       _isForceLocal=False,
-                      _isOffsetLocal=True):
+                      _isOffsetLocal=True,):
         papi.bodynode__addExtForceWithArrow(self.wid,
                                    self.skid,
                                    self.id,
@@ -316,6 +317,7 @@ class BodyNode(object):
                                    _arrow_headX,
                                    _arrow_headY,
                                    _arrow_headZ,
+                                   _arrow_index,
                                    _isForceLocal,
                                    _isOffsetLocal)
 
@@ -328,6 +330,7 @@ class BodyNode(object):
                       _arrow_headX,
                       _arrow_headY,
                       _arrow_headZ,
+                      _arrow_index,
                       _isForceLocal=False,
                       _isOffsetLocal=True):
         papi.bodynode__setExtForceWithArrow(self.wid,
@@ -341,6 +344,7 @@ class BodyNode(object):
                                    _arrow_headX,
                                    _arrow_headY,
                                    _arrow_headZ,
+                                   _arrow_index,
                                    _isForceLocal,
                                    _isOffsetLocal)
 

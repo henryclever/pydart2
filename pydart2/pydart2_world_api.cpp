@@ -98,12 +98,10 @@ void WORLD(addEmptySkeleton)(const char* const name) {
 
 void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, float cap_rot1, float cap_rot2, float cap_rot3, float cap_offsetX, float cap_offsetY, float cap_offsetZ, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_type, const char* const joint_name){
 
-
     BodyNodePtr parentNode = nullptr;
     if (parent >= 0){
         parentNode = mBodyNodePtrs[parent];
     }
-
 
     std::string str_joint_type(joint_type);
     std::string str_joint_name(joint_name);
@@ -197,6 +195,41 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
     bn->setLocalCOM(center);
     mBodyNodePtrs.push_back(bn);
     MSG << "Adding Capsule " << global_number << endl;
+}
+
+
+void WORLD(addWeldBox)(float width, float length, float height, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_name){
+
+    BodyNodePtr parentNode = nullptr;
+
+    std::string str_joint_name(joint_name);
+
+
+    WeldJoint::Properties properties;
+    properties.mName = str_joint_name;
+    properties.mT_ParentBodyToJoint.translation() = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ); //joint location
+    bn = skel->createJointAndBodyNodePair<WeldJoint>(nullptr,  properties, BodyNode::AspectProperties(str_joint_name)).second;
+
+    //Now make the body
+
+    // Set the geometry of the Body  // Create a BoxShape to be used for both visualization and collision checking
+    std::shared_ptr<BoxShape> box(new BoxShape(Eigen::Vector3d(width, length, height)));
+
+    // Create a shape node for visualization and collision checking
+    auto shapeNode = bn->createShapeNodeWith<VisualAspect, CollisionAspect, DynamicsAspect>(box);
+    shapeNode->getVisualAspect()->setColor(Eigen::Vector4d(0.95, 0.95, 0.95, 1.0));
+
+    // Set the location of the shape node
+    Eigen::Isometry3d box_tf(Eigen::Isometry3d::Identity());
+
+    Eigen::Vector3d center = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ);
+    box_tf.translation() = center;
+
+    shapeNode->setRelativeTransform(box_tf);
+
+    bn->setLocalCOM(center);
+    mBodyNodePtrs.push_back(bn);
+    MSG << "Adding Box " << global_number << endl;
 }
 
 

@@ -41,6 +41,10 @@ std::shared_ptr<ArrowShape> mArrow(new ArrowShape(
               ArrowShape::Properties(0.01, 1.8, 0.5), //radius, head rad scale, scale of head length w.r.t total length
               dart::Color::Orange(1.0))); //color
 
+
+
+std::vector<std::shared_ptr<ArrowShape>> mArrows;
+
 //std::shared_ptr<ArrowShape> mArrow;
 //mArrow->setProperties( ArrowShape::Properties(0.01, 1.8, 0.5) ) ;
 
@@ -299,20 +303,25 @@ void BODY(setExtForce)(int wid, int skid, int bid, double inv3[3], double inv3_2
     body->setExtForce(read(inv3, 3), read(inv3_2, 3), _isForceLocal, _isOffsetLocal);
 }
 
-void BODY(addExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, bool _isForceLocal, bool _isOffsetLocal) {
+void BODY(addExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, int arrow_index, bool _isForceLocal, bool _isOffsetLocal) {
     BodyNode* body = GET_BODY(wid, skid, bid);
     body->addExtForce(read(inv3, 3), read(inv3_2, 3), _isForceLocal, _isOffsetLocal);
 
-    mArrow->setPositions(
+
+
+    mArrows.push_back(mArrow);
+
+    mArrows[arrow_index]->setPositions(
             Eigen::Vector3d(ATX, ATY, ATZ),
             Eigen::Vector3d(AHX, AHY, AHZ));
+
     //auto shapeNodes = body->getShapeNodesWith<VisualAspect>();
     //shapeNodes[1]->getVisualAspect()->setColor(dart::Color::Green());
-    body->createShapeNodeWith<VisualAspect>(mArrow);
+    body->createShapeNodeWith<VisualAspect>(mArrows[arrow_index]);
 
 }
 
-void BODY(setExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, bool _isForceLocal, bool _isOffsetLocal) {
+void BODY(setExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, int arrow_index, bool _isForceLocal, bool _isOffsetLocal) {
     BodyNode* body = GET_BODY(wid, skid, bid);
     body->setExtForce(read(inv3, 3), read(inv3_2, 3), _isForceLocal, _isOffsetLocal);
     auto visualShapeNodes = body->getShapeNodesWith<VisualAspect>();
@@ -323,10 +332,12 @@ void BODY(setExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], doub
     {
         visualShapeNodes[2]->remove();
     }
-    mArrow->setPositions(
+
+    mArrows[arrow_index]->setPositions(
             Eigen::Vector3d(ATX, ATY, ATZ),
             Eigen::Vector3d(AHX, AHY, AHZ));
-    body->createShapeNodeWith<VisualAspect>(mArrow);
+
+    body->createShapeNodeWith<VisualAspect>(mArrows[arrow_index]);
 
 
 }

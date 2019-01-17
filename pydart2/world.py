@@ -71,6 +71,9 @@ class World(object):
     def add_capsule(self, parent, radius, length, cap_rot, cap_offset, joint_loc, joint_type, joint_name):
         papi.world__addCapsule(parent, radius, length, cap_rot[0], cap_rot[1], cap_rot[2], cap_offset[0], cap_offset[1], cap_offset[2], joint_loc[0], joint_loc[1], joint_loc[2], joint_type, joint_name)
 
+    def add_weld_box(self, width, length, height, joint_loc, joint_name):
+        papi.world__addWeldBox(width, length, height, joint_loc[0], joint_loc[1], joint_loc[2], joint_name)
+
     def add_built_skeleton(self, _skel_id, _skel_name = None):
         skel = World.CLASS_SKELETON_BUILDER(_world=self, _id=_skel_id, _skel_name=_skel_name)
         self.skeletons.append(skel)

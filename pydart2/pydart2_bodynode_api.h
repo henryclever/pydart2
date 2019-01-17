@@ -72,8 +72,8 @@ void BODY(getRelativeTransform)(int wid, int skid, int bid, double outv44[4][4])
 // BodyNode::Ext Force and Torque
 void BODY(addExtForce)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], bool _isForceLocal, bool _isOffsetLocal);
 void BODY(setExtForce)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], bool _isForceLocal, bool _isOffsetLocal);
-void BODY(addExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, bool _isForceLocal, bool _isOffsetLocal);
-void BODY(setExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, bool _isForceLocal, bool _isOffsetLocal);
+void BODY(addExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, int arrow_index, bool _isForceLocal, bool _isOffsetLocal);
+void BODY(setExtForceWithArrow)(int wid, int skid, int bid, double inv3[3], double inv3_2[3], double ATX, double ATY, double ATZ, double AHX, double AHY, double AHZ, int arrow_index, bool _isForceLocal, bool _isOffsetLocal);
 void BODY(addExtTorque)(int wid, int skid, int bid, double inv3[3], bool _isLocal);
 void BODY(setExtTorque)(int wid, int skid, int bid, double inv3[3], bool _isLocal);
 

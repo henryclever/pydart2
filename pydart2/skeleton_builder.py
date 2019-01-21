@@ -212,10 +212,10 @@ class SkeletonBuilder(object):
         papi.skeleton__setAdjacentBodyCheck(self.world.id, self.id,
                                             _enable)
 
-    # def remove_all_collision_pairs(self):
-    #     for b1 in self.bodies:
-    #         for b2 in self.bodies:
-    #             self.world.set_collision_pair(b1, b2, False)
+    def remove_all_collision_pairs(self):
+        for b1 in self.bodynodes:
+            for b2 in self.bodynodes:
+                self.world.set_collision_pair(b1, b2, False)
 
     def constraint_forces(self):
         return papi.skeleton__getConstraintForces(self.world.id,

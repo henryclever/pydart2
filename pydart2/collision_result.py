@@ -40,6 +40,8 @@ class CollisionResult(object):
     def update(self,):
         self.contacts = list()
         self.contacted_bodies = list()
+        self.contact_sets = list()
+
 
         # contacts
         n = papi.collisionresult__getNumContacts(self.id)
@@ -48,12 +50,20 @@ class CollisionResult(object):
             self.contacts = [Contact(self.world, v_i)
                              for v_i in np.split(v, n)]
 
+        for i in range(int(len(v)/10)):
+            self.contact_sets.append([int(v[10*i + 7]), int(v[10*i+9])])
+
         # contacted_bodies
         ids = np.array(papi.collisionresult__getCollidingBodyNodes(self.id))
         n = old_div(len(ids), 2)
+
+
         if n > 0:
             self.contacted_bodies = [self.world.skeletons[i].bodynodes[j]
                                      for i, j in np.split(ids, n)]
+
+    def clear(self, ):
+        papi.collisionresult__clearContacts(self.id)
 
     def __repr__(self,):
         ret = "[CollisionResult: %d contacts %d contacted bodies]" % (

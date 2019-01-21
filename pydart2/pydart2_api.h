@@ -36,8 +36,11 @@ void MARKER(render)(int wid, int skid, int mid);
 // Contacts
 #define COLLISION_RESULT(funcname) collisionresult__##funcname
 #define GET_COLLISION_RESULT(wid) Manager::world(wid)->getConstraintSolver()->getLastCollisionResult();
+#define CLEAR_COLLISION_RESULT(wid) Manager::world(wid)->getConstraintSolver()->clearLastCollisionResult();
+//#define CLEAR_COLLISION_RESULT(wid) Manager::world(wid)->getRootBodyNode()->remove();
 
 int COLLISION_RESULT(getNumContacts)(int wid);
+void COLLISION_RESULT(clearContacts)(int wid);
 void COLLISION_RESULT(getContacts)(int wid, double* outv, int nout);
 std::vector<int> COLLISION_RESULT(getCollidingBodyNodes)(int wid);
 void COLLISION_RESULT(renderContact)(double inv6[6], double size, double scale);

@@ -81,6 +81,10 @@ int COLLISION_RESULT(getNumContacts)(int wid) {
     return result.getNumContacts();
 }
 
+void COLLISION_RESULT(clearContacts)(int wid) {
+    CLEAR_COLLISION_RESULT(wid);
+}
+
 void COLLISION_RESULT(getContacts)(int wid, double* outv, int nout) {
     const auto result = GET_COLLISION_RESULT(wid);
     const auto nContacts = static_cast<int>(result.getNumContacts());
@@ -137,6 +141,7 @@ std::vector<int> COLLISION_RESULT(getCollidingBodyNodes)(int wid) {
     }
     return ret;
 }
+
 
 void COLLISION_RESULT(renderContact)(double inv6[6], double size, double scale) {
     dart::gui::RenderInterface* ri = Manager::getRI();

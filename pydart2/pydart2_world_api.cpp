@@ -38,6 +38,7 @@ int createWorldFromSkel(const char* const path) {
 }
 
 void destroyWorld(int wid) {
+    mBodyNodePtrs.clear();
     Manager::destroyWorld(wid);
 }
 
@@ -306,7 +307,7 @@ int WORLD(getIndex)(int wid, int _index) {
 ////////////////////////////////////////
 // World::Property Functions
 void WORLD(setGravity)(int wid, double inv3[3]) {
-    dart::simulation::WorldPtr world = GET_WORLD(wid);
+    dart::simulation::WorldPtr world = GET_WORLD    (wid);
     world->setGravity(read(inv3, 3));
 }
 

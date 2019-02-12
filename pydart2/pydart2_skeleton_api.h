@@ -11,6 +11,8 @@ void SKEL(render)(int wid, int skid);
 void SKEL(renderWithColor)(int wid, int skid, double inv4[4]);
 const char* SKEL(getName)(int wid, int skid);
 double SKEL(getMass)(int wid, int skid);
+void SKEL(resetMomentum(int wid, int skid));
+
 
 ////////////////////////////////////////
 // Skeleton::Property Functions

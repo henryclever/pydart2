@@ -96,6 +96,10 @@ class SkeletonBuilder(object):
     def num_bodynodes(self):
         return len(self.bodynodes)
 
+    def reset_momentum(self):
+        return papi.skeleton__resetMomentum(self.world.id, self.id)
+
+
     @property
     def nbodies(self):
         return self.num_bodynodes()

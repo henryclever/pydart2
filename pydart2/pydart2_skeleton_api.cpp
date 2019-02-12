@@ -43,6 +43,12 @@ double SKEL(getMass)(int wid, int skid) {
     return skel->getMass();
 }
 
+void SKEL(resetMomentum)(int wid, int skid) {
+    dart::dynamics::SkeletonPtr skel = GET_SKELETON(wid, skid);
+    skel->resetVelocities();
+    skel->resetAccelerations();
+}
+
 ////////////////////////////////////////
 // Skeleton::Property Functions
 bool SKEL(isMobile)(int wid, int skid) {

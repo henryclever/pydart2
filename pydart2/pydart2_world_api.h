@@ -14,7 +14,7 @@ int WORLD(addPySkeleton)(int wid);
 int WORLD(addSkeleton)(int wid, const char* const path);
 void WORLD(addEmptySkeleton)(const char* const name);
 void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, float cap_rot1, float cap_rot2, float cap_rot3, float cap_offsetX, float cap_offsetY, float cap_offsetZ, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_type, const char* const joint_name);
-void WORLD(addWeldBox)(float width, float length, float height, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_name);
+void WORLD(addWeldBox)(float width, float length, float height, float joint_locX, float joint_locY, float joint_locZ, float box_rot1, float box_rot2, float box_rot3, const char* const joint_name);
 int WORLD(getNumSkeletons)(int wid);
 
 void WORLD(reset)(int wid);

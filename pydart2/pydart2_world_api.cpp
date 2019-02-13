@@ -186,7 +186,7 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
     Eigen::Vector3d center = Eigen::Vector3d(cap_offsetX, cap_offsetY, cap_offsetZ);
     capsule_tf.translation() = center;
     capsule_tf.rotate(m);
-    cout << m << endl;
+    //cout << m << endl;
 
     shapeNode->setRelativeTransform(capsule_tf);
 
@@ -199,7 +199,7 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
 }
 
 
-void WORLD(addWeldBox)(float width, float length, float height, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_name){
+void WORLD(addWeldBox)(float width, float length, float height, float joint_locX, float joint_locY, float joint_locZ, float box_rot1, float box_rot2, float box_rot3, const char* const joint_name){
 
     BodyNodePtr parentNode = nullptr;
 
@@ -222,9 +222,14 @@ void WORLD(addWeldBox)(float width, float length, float height, float joint_locX
 
     // Set the location of the shape node
     Eigen::Isometry3d box_tf(Eigen::Isometry3d::Identity());
+    Eigen::Matrix3d m;
+    m = Eigen::AngleAxisd(box_rot1, Eigen::Vector3d::UnitX())
+      * Eigen::AngleAxisd(box_rot2, Eigen::Vector3d::UnitZ())
+      * Eigen::AngleAxisd(box_rot3, Eigen::Vector3d::UnitY());
 
     Eigen::Vector3d center = Eigen::Vector3d(joint_locX, joint_locY, joint_locZ);
     box_tf.translation() = center;
+    box_tf.rotate(m);
 
     shapeNode->setRelativeTransform(box_tf);
 

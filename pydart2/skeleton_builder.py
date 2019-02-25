@@ -209,6 +209,12 @@ class SkeletonBuilder(object):
         papi.skeleton__setSelfCollisionCheck(self.world.id, self.id,
                                              _enable)
 
+    def test_filter(self):
+        papi.skeleton__testFilter()
+
+    def set_collision_filter(self, bid1, bid2, enable):
+        papi.skeleton__setCollisionFilter(self.world.id, self.id, bid1, bid2, enable)
+
     def adjacent_body_check(self):
         return papi.skeleton__getAdjacentBodyCheck(self.world.id, self.id)
 
@@ -220,6 +226,10 @@ class SkeletonBuilder(object):
         for b1 in self.bodynodes:
             for b2 in self.bodynodes:
                 self.world.set_collision_pair(b1, b2, False)
+
+    def add_collision_pair(self, bid1, bid2):
+
+        self.world.set_collision_pair(self.bodynodes[bid1], self.bodynodes[bid2], True)
 
     def constraint_forces(self):
         return papi.skeleton__getConstraintForces(self.world.id,

@@ -91,8 +91,7 @@ void WORLD(addEmptySkeleton)(const char* const name) {
     using namespace dart::dynamics;
     std::string strname(name);
     skel = Skeleton::create(strname);
-    global_number = 88;
-    MSG << " [pydart_api] Added empty skel " << global_number << endl;
+    MSG << " [pydart_api] Added empty skel "  << endl;
 }
 
 
@@ -115,10 +114,10 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
         bn = skel->createJointAndBodyNodePair<BallJoint>(parentNode, properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
-        const double& R = capsule_radius * 2 + 0.01; //m
-        std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
-        auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
-        shapeNode->getVisualAspect()->setColor(dart::Color::Red());
+        //const double& R = capsule_radius * 2 + 0.01; //m
+        //std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
+        //auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
+        //shapeNode->getVisualAspect()->setColor(dart::Color::Red());
     }
     else if (str_joint_type == "REVOLUTE_X" or str_joint_type == "REVOLUTE_Y" or str_joint_type == "REVOLUTE_Z"){
         RevoluteJoint::Properties properties;
@@ -136,7 +135,7 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         // Make a shape for the Joint
         const double R = capsule_radius + 0.01;
         const double h = capsule_radius * 2;
-        std::shared_ptr<CylinderShape> cyl(new CylinderShape(R, h));
+        //std::shared_ptr<CylinderShape> cyl(new CylinderShape(R, h));
         // Line up the cylinder with the Joint axis
         Eigen::Isometry3d tf(Eigen::Isometry3d::Identity());
         if (str_joint_type == "REVOLUTE_X"){
@@ -145,9 +144,9 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
             tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(90.0 * 3.14 / 180.0, 0, 0));}
         else if (str_joint_type == "REVOLUTE_Z"){
             tf.linear() = dart::math::eulerXYZToMatrix(Eigen::Vector3d(0, 0, 90.0 * 3.14 / 180.0));}
-        auto shapeNode = bn->createShapeNodeWith<VisualAspect>(cyl);
-        shapeNode->getVisualAspect()->setColor(dart::Color::Red());
-        shapeNode->setRelativeTransform(tf);
+        //auto shapeNode = bn->createShapeNodeWith<VisualAspect>(cyl);
+        //shapeNode->getVisualAspect()->setColor(dart::Color::Red());
+        //shapeNode->setRelativeTransform(tf);
     }
     else {
         FreeJoint::Properties properties;
@@ -158,10 +157,10 @@ void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, f
         //properties.mSpringStiffnesses = Eigen::Vector3d::Constant(0.0f);
         bn = skel->createJointAndBodyNodePair<FreeJoint>(nullptr,  properties, BodyNode::AspectProperties(str_joint_name)).second;
         // Make a shape for the Joint
-        const double& R = capsule_radius * 2 + 0.01; //m
-        std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
-        auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
-        shapeNode->getVisualAspect()->setColor(dart::Color::Red());
+        //const double& R = capsule_radius * 2 + 0.01; //m
+        //std::shared_ptr<EllipsoidShape> ball(new EllipsoidShape(Eigen::Vector3d(R, R, R)));
+        //auto shapeNode = bn->createShapeNodeWith<VisualAspect>(ball);
+        //shapeNode->getVisualAspect()->setColor(dart::Color::Red());
     }
 
 
@@ -237,6 +236,8 @@ void WORLD(addWeldBox)(float width, float length, float height, float joint_locX
     mBodyNodePtrs.push_back(bn);
     MSG << "Adding Box " << global_number << endl;
 }
+
+
 
 
 int WORLD(getNumSkeletons)(int wid) {

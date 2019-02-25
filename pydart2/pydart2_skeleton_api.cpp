@@ -6,6 +6,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+
 // Boost headers
 #include <boost/algorithm/string.hpp>
 
@@ -14,6 +15,8 @@ using std::endl;
 #include "pydart2_skeleton_api.h"
 #include "pydart2_draw.h"
 
+#include "dart/collision/detail/UnorderedPairs.hpp"
+detail::UnorderedPairs<dynamics::BodyNode> mBodyNodeBlackList2;
 using namespace pydart;
 
 
@@ -70,6 +73,79 @@ void SKEL(setSelfCollisionCheck)(int wid, int skid, int enable) {
     dart::dynamics::SkeletonPtr skel = GET_SKELETON(wid, skid);
     skel->setSelfCollisionCheck(enable);
 }
+
+void SKEL(testFilter)()
+{
+    using namespace dart::simulation;
+    using namespace dart::dynamics;
+    using namespace dart::collision;
+    // Create two bodies skeleton. The two bodies are placed at the same position
+    // with the same size shape so that they collide by default.
+    auto skel = Skeleton::create();
+    auto shape = std::make_shared<BoxShape>(Eigen::Vector3d(1, 1, 1));
+    auto pair0 = skel->createJointAndBodyNodePair<RevoluteJoint>(nullptr);
+    auto* body0 = pair0.second;
+    body0->createShapeNodeWith<VisualAspect, CollisionAspect>(shape);
+    auto pair1 = body0->createChildJointAndBodyNodePair<RevoluteJoint>();
+    auto* body1 = pair1.second;
+    body1->createShapeNodeWith<VisualAspect, CollisionAspect>(shape);
+
+    // Create a world and add the created skeleton
+    auto world = std::make_shared<dart::simulation::World>();
+    auto constraintSolver = world->getConstraintSolver();
+    constraintSolver->setCollisionDetector(dart::collision::BulletCollisionDetector::create());
+    world->addSkeleton(skel);
+
+    // Get the collision group from the constraint solver
+    auto group = constraintSolver->getCollisionGroup();
+    cout << group->getNumShapeFrames() << " " << 2u << endl;;
+
+    // Default collision filter for Skeleton
+    auto& option = constraintSolver->getCollisionOption();
+    auto bodyNodeFilter = std::make_shared<BodyNodeCollisionFilter>();
+    option.collisionFilter = bodyNodeFilter;
+
+    // Test blacklist
+    skel->enableSelfCollisionCheck();
+    skel->enableAdjacentBodyCheck();
+    bodyNodeFilter->addBodyNodePairToBlackList(body0, body1);
+    cout << group->collide(option) << endl;
+    bodyNodeFilter->removeBodyNodePairFromBlackList(body0, body1);
+    cout << group->collide(option) << endl;
+
+}
+
+void SKEL(setCollisionFilter)(int wid, int skid, int bid1, int bid2, int bEnable) {
+    using namespace dart::simulation;
+    using namespace dart::dynamics;
+    // Get collision detector
+    WorldPtr world = Manager::world(wid);
+    dart::dynamics::SkeletonPtr skel = GET_SKELETON(wid, skid);
+    dart::constraint::ConstraintSolver* solver = world->getConstraintSolver();
+    solver->setCollisionDetector(dart::collision::BulletCollisionDetector::create());
+    //dart::collision::CollisionOption* option = solver->getCollisionOption();
+    //dart::collision::BodyNodeCollisionFilter* filter = solver->getCollisionFilter();
+    auto& collisionOption = solver->getCollisionOption();
+    auto group = world->getConstraintSolver()->getCollisionGroup();
+
+    //auto bodyNodeFilter = collisionOption.collisionFilter;
+    auto bodyNodeFilter = std::make_shared<dart::collision::BodyNodeCollisionFilter>();
+    collisionOption.collisionFilter = bodyNodeFilter;
+    cout << "wid: " << wid << "  skid: " << skid << " num bodynodes: " << skel->getNumBodyNodes() << endl;
+    //cout <<  mBodyNodeBlackList << endl;
+    BodyNode* body1 = skel->getBodyNode(bid1);//GET_BODY(wid, skid, bid1);
+    BodyNode* body2 = skel->getBodyNode(bid2);//GET_BODY(wid, skid, bid2);
+    bool enable = (bEnable != 0);
+    if (enable) {
+        bodyNodeFilter->addBodyNodePairToBlackList(body1, body2);
+        cout << "blacklisted " << bid1 << " and " << bid2 << " " << group->collide(collisionOption) << endl;
+        //bodyNodeFilter->needCollision(auto o1, auto o2);
+    } else {
+        bodyNodeFilter->removeBodyNodePairFromBlackList(body1, body2);
+        cout << "rm from blacklist " << bid1 << " and " << bid2 << endl;
+    }
+}
+
 
 bool SKEL(getAdjacentBodyCheck)(int wid, int skid) {
     dart::dynamics::SkeletonPtr skel = GET_SKELETON(wid, skid);

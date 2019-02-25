@@ -65,7 +65,7 @@ class World(object):
         self.skeletons.append(skel)
         return skel
 
-    def create_empty_skeleton(self, _skel_name = None):
+    def add_empty_skeleton(self, _skel_name = None):
         papi.world__addEmptySkeleton(_skel_name)
 
     def add_capsule(self, parent, radius, length, cap_rot, cap_offset, joint_loc, joint_type, joint_name):
@@ -235,7 +235,7 @@ class World(object):
         detector_type = self.collision_detector()
         return typenames[detector_type]
 
-    def set_collision_pair(self, body1, body2, is_enable):
+    def set_world_collision_pair(self, body1, body2, is_enable):
         flag_enable = 1 if is_enable else 0
         papi.setWorldCollisionPair(self.id,
                                    body1.skel.id, body1.id,

@@ -20,6 +20,8 @@ bool SKEL(isMobile)(int wid, int skid);
 void SKEL(setMobile)(int wid, int skid, bool mobile);
 bool SKEL(getSelfCollisionCheck)(int wid, int skid);
 void SKEL(setSelfCollisionCheck)(int wid, int skid, int enable);
+void SKEL(setCollisionFilter)(int wid, int skid, int bid1, int bid2, int enable);
+void SKEL(testFilter)();
 bool SKEL(getAdjacentBodyCheck)(int wid, int skid);
 void SKEL(setAdjacentBodyCheck)(int wid, int skid, int enable);
 void SKEL(setRootJointToTransAndEuler)(int wid, int skid);

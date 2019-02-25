@@ -15,8 +15,6 @@ using std::endl;
 #include "pydart2_skeleton_api.h"
 #include "pydart2_draw.h"
 
-#include "dart/collision/detail/UnorderedPairs.hpp"
-detail::UnorderedPairs<dynamics::BodyNode> mBodyNodeBlackList2;
 using namespace pydart;
 
 
@@ -139,7 +137,6 @@ void SKEL(setCollisionFilter)(int wid, int skid, int bid1, int bid2, int bEnable
     if (enable) {
         bodyNodeFilter->addBodyNodePairToBlackList(body1, body2);
         cout << "blacklisted " << bid1 << " and " << bid2 << " " << group->collide(collisionOption) << endl;
-        //bodyNodeFilter->needCollision(auto o1, auto o2);
     } else {
         bodyNodeFilter->removeBodyNodePairFromBlackList(body1, body2);
         cout << "rm from blacklist " << bid1 << " and " << bid2 << endl;

@@ -95,6 +95,56 @@ void WORLD(addEmptySkeleton)(const char* const name) {
 }
 
 
+void WORLD(testFilter)(int wid)
+{
+    using namespace dart::simulation;
+    using namespace dart::dynamics;
+    using namespace dart::collision;
+    // Create two bodies skeleton. The two bodies are placed at the same position
+    // with the same size shape so that they collide by default.
+    auto skel = Skeleton::create();
+    auto shape = std::make_shared<BoxShape>(Eigen::Vector3d(1, 1, 1));
+    auto pair0 = skel->createJointAndBodyNodePair<RevoluteJoint>(nullptr);
+    auto* body0 = pair0.second;
+    body0->createShapeNodeWith<VisualAspect, CollisionAspect>(shape);
+    auto pair1 = body0->createChildJointAndBodyNodePair<RevoluteJoint>();
+    auto* body1 = pair1.second;
+    body1->createShapeNodeWith<VisualAspect, CollisionAspect>(shape);
+    auto pair2 = body1->createChildJointAndBodyNodePair<RevoluteJoint>();
+    auto* body2 = pair2.second;
+    body2->createShapeNodeWith<VisualAspect, CollisionAspect>(shape);
+
+    // Create a world and add the created skeleton
+    //auto world = std::make_shared<dart::simulation::World>();
+    auto world = GET_WORLD(wid);
+    auto constraintSolver = world->getConstraintSolver();
+    constraintSolver->setCollisionDetector(dart::collision::BulletCollisionDetector::create());
+    world->addSkeleton(skel);
+
+    // Get the collision group from the constraint solver
+    auto group = constraintSolver->getCollisionGroup();
+    cout << group->getNumShapeFrames() << " " << 2u << endl;;
+
+    // Default collision filter for Skeleton
+    auto& option = constraintSolver->getCollisionOption();
+    auto bodyNodeFilter = std::make_shared<BodyNodeCollisionFilter>();
+    option.collisionFilter = bodyNodeFilter;
+
+    // Test blacklist
+    skel->enableSelfCollisionCheck();
+    skel->enableAdjacentBodyCheck();
+    bodyNodeFilter->addBodyNodePairToBlackList(body0, body1);
+    cout << group->collide(option) << endl;
+    bodyNodeFilter->addBodyNodePairToBlackList(body1, body2);
+    cout << group->collide(option) << endl;
+    bodyNodeFilter->addBodyNodePairToBlackList(body0, body2);
+    cout << group->collide(option) << endl;
+    //bodyNodeFilter->removeBodyNodePairFromBlackList(body0, body1);
+    //cout << group->collide(option) << endl;
+}
+
+
+
 
 void WORLD(addCapsule)(int parent, float capsule_radius, float capsule_length, float cap_rot1, float cap_rot2, float cap_rot3, float cap_offsetX, float cap_offsetY, float cap_offsetZ, float joint_locX, float joint_locY, float joint_locZ, const char* const joint_type, const char* const joint_name){
 

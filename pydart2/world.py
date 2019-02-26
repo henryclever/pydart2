@@ -68,6 +68,9 @@ class World(object):
     def add_empty_skeleton(self, _skel_name = None):
         papi.world__addEmptySkeleton(_skel_name)
 
+    def test_filter(self):
+        papi.world__testFilter(self.id)
+
     def add_capsule(self, parent, radius, length, cap_rot, cap_offset, joint_loc, joint_type, joint_name):
         papi.world__addCapsule(parent, radius, length, cap_rot[0], cap_rot[1], cap_rot[2], cap_offset[0], cap_offset[1], cap_offset[2], joint_loc[0], joint_loc[1], joint_loc[2], joint_type, joint_name)
 

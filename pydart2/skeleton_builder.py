@@ -206,14 +206,10 @@ class SkeletonBuilder(object):
         return papi.skeleton__getSelfCollisionCheck(self.world.id, self.id)
 
     def set_self_collision_check(self, _enable):
-        papi.skeleton__setSelfCollisionCheck(self.world.id, self.id,
-                                             _enable)
+        papi.skeleton__setSelfCollisionCheck(self.world.id, self.id, _enable)
 
-    def test_filter(self):
-        papi.skeleton__testFilter()
-
-    def set_collision_filter(self, bid1, bid2, enable):
-        papi.skeleton__setCollisionFilter(self.world.id, self.id, bid1, bid2, enable)
+    def set_collision_filter(self, enable):
+        papi.skeleton__setCollisionFilter(self.world.id, self.id, enable)
 
     def adjacent_body_check(self):
         return papi.skeleton__getAdjacentBodyCheck(self.world.id, self.id)

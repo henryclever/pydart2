@@ -165,23 +165,26 @@ class DartSkelSim(object):
         skel = self.world.add_built_skeleton(_skel_id=0, _skel_name="human")
         skel.set_self_collision_check(True)
         skel.set_adjacent_body_check(False)
-        skel.test_filter()
+        skel.set_collision_filter(True)
 
-        #blacklist things
-        for i in range(NUM_CAPSULES):
-            for j in range(NUM_CAPSULES):
-                if i != j: skel.set_collision_filter(i, j, False)
+
 
         #set parameters
+
+        #[-1.32726466  0.31681432  0.04725983 - 1.29570571 - 0.60504953 - 0.43173041]
+
+        skel = self.assign_initial_joint_angles(skel)
         skel = self.assign_joint_rest_and_stiffness(skel)
         skel = self.assign_joint_limits_and_damping(skel)
         skel = self.assign_body_masses_and_inertia(skel, initial_rots, radii, lengths, radii_med, lengths_med)
 
 
 
+        #self.world.test_filter()
+
         ########################### CREATE SKELETON FOR FLOOR AND ADD TO WORLD ###########################
         self.world.add_empty_skeleton(_skel_name="floor")
-        self.world.add_weld_box(width=10.0, length=10.0, height=0.2, joint_loc=[0.0, 0.0, -STARTING_HEIGHT / DART_TO_FLEX_CONV / 2 - 0.05],  box_rot=[0.0, 0.0, 0.0], joint_name="floor")  # -0.05
+        self.world.add_weld_box(width=10.0, length=10.0, height=0.2, joint_loc=[0.0, 0.0, -STARTING_HEIGHT / DART_TO_FLEX_CONV / 2 - 0.05 - 2.0],  box_rot=[0.0, 0.0, 0.0], joint_name="floor")  # -0.05
         skel_floor = self.world.add_built_skeleton(_skel_id=1, _skel_name="floor")
 
 
@@ -205,6 +208,23 @@ class DartSkelSim(object):
         self.count = 0
 
 
+    def assign_initial_joint_angles(self, skel):
+        all_angles = [0.5235987755982988, 0.0, 0.0, 0, 0, 0, -1.327264664262335, 0.31681431961639595,
+                       0.04725983225503916, -1.2957057121014421, -0.6050495273075409, -0.4317304086650779,
+                       0.5235987755982988, 0.0, 0.0, 1.1588162575994423, 0.8477023796667841, 0.0, 0.0, 0.0, 0.0, 0.0,
+                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2617993877991494, 0.0, 0.0, -0.3988715554824304,
+                       -0.18620334519883197, 0.04736423806174206, 0.14321410506725024, -0.333812412607261,
+                       0.38741067473865776, 0.2617993877991494, 0.0, 0.0, -0.9613662032437658, -0.2768043471457327,
+                       -0.15753288297896492, -0.03544313645046322, 0.24346235139909994, 0.815040875165644,
+                       -1.6633980534256791, 0.8434932630190803, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+        skel_q_init = skel.ndofs * [0]
+        for item in range(len(skel_q_init)):
+            skel_q_init[item] = all_angles[item]
+
+
+        skel.set_positions(skel_q_init)
+        return skel
 
 
     def assign_body_masses_and_inertia(self, skel, initial_rots, radii, lengths, radii_med, lengths_med):

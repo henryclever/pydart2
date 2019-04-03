@@ -25,7 +25,7 @@ learning), and so on.
 
 ======
 ## Environment
-+ Ubuntu 16.04
++ Ubuntu 16.04 - DOES NOT WORK WITH 14.04! - Henry C. 04/03/2018
 + Python2 / Python 3
 + DART 6.0.1 (or higher): https://github.com/dartsim/dart/
 

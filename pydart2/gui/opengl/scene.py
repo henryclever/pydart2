@@ -7,7 +7,7 @@ from pydart2.gui.trackball import Trackball
 
 
 class OpenGLScene(object):
-    def __init__(self, width, height, window=None):
+    def __init__(self, width, height, rot_quat, trans, window=None):
         self.width = width
         self.height = height
         self.window = window
@@ -16,7 +16,7 @@ class OpenGLScene(object):
 
         self.cameras = list()
         self.tb = None
-        self.init_cameras()
+        self.init_cameras(rot_quat, trans)
 
     def init(self, ):
         GL.glDisable(GL.GL_CULL_FACE)
@@ -149,16 +149,19 @@ class OpenGLScene(object):
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
 
-    def init_cameras(self,):
+    def init_cameras(self, rot_quat, trans):
         self.cameras = list()
         self.add_camera(
             Trackball(
-                rot=[-0.152, 0.045, -0.002, 0.987],
-                trans=[0.050, 0.210, -2.500]),
+                #rot=[-0.152, 0.045, -0.002, 0.987],
+                rot=rot_quat,
+                #trans=[0.050, 0.210, -2.500]),
+                trans=trans),
             "Camera Y up")
         self.add_camera(
             Trackball(
-                rot=[0.535, 0.284, 0.376, 0.701], trans=[0.10, 0.02, -2.770]),
+                rot=[0.535, 0.284, 0.376, 0.701],
+                trans=[0.10, 0.02, -2.770]),
             "Camera Z up")
         self.set_camera(0)
 

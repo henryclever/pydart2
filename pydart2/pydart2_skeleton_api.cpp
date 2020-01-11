@@ -88,17 +88,22 @@ void SKEL(setCollisionFilter)(int wid, int skid, int bEnable) {
 
     bool enable = (bEnable != 0);
     if (enable) {
+        //don't blacklist the forearms or hands (16 17 18 19)
         for(int i=0; i<16; ++i){
             for(int j=0; j<16; ++j){
                 if(i != j){
-                    if(i!=4 && j!=4 && i!=5 && j!=5 && i!=7 && j!=7 && i!=8 && j!=8)
+                    //blacklist everything except the lower legs, feet, and head
+                    if(i!=4 && j!=4 && i!=5 && j!=5 && i!=7 && j!=7 && i!=8 && j!=8 && i!=13 && j!=13)
                     {
                         bodyNodeFilter->addBodyNodePairToBlackList(skel->getBodyNode(i), skel->getBodyNode(j));
-
                     }
                 }
             }
         }
+        //blacklist the head from the upper torso and inner shoulders because it gets too close on obese people
+        bodyNodeFilter->addBodyNodePairToBlackList(skel->getBodyNode(9), skel->getBodyNode(13));
+        bodyNodeFilter->addBodyNodePairToBlackList(skel->getBodyNode(11), skel->getBodyNode(13));
+        bodyNodeFilter->addBodyNodePairToBlackList(skel->getBodyNode(12), skel->getBodyNode(13));
     }
 }
 

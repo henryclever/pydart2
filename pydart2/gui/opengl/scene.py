@@ -7,7 +7,7 @@ from pydart2.gui.trackball import Trackball
 
 
 class OpenGLScene(object):
-    def __init__(self, width, height, rot_quat, trans, window=None):
+    def __init__(self, width, height, rot_quat = [-0.152, 0.045, -0.002, 0.987], trans = [0.050, 0.210, -2.500], window=None):
         self.width = width
         self.height = height
         self.window = window
